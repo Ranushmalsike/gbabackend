@@ -19,6 +19,16 @@ export class UsersController {
     }
 
     /**
+     * Login user 
+     * @param body 
+     * @returns 
+     */
+    @Post()
+    async loginUser(@Body() body:{email :string, password: string}){
+        return this.user_svce.findOne(body.password, body.email);
+    }
+
+    /**
      * Insert new data for user
      * @param body 
      * @returns 

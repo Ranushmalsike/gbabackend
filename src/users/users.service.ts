@@ -2,6 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../common/prisma.service';
 import { hashPassword, comparePassword } from './password.utils'
 
+/**
+ * npx nest generate service status     
+ */
+
 @Injectable()
 export class UsersService {
     constructor (private readonly prs:PrismaService){}
@@ -15,6 +19,26 @@ export class UsersService {
     }
 
     /**
+     * login user
+     * @param password 
+     * @param email 
+     * @returns 
+     */
+
+    async findOne(password: string, email:string){
+        const findMe = await this.prs.user.findUnique({
+            where: {email},
+        });
+
+        if(findMe && await comparePassword(password, findMe.password)){
+            return findMe;
+        }
+        else{
+            return null
+        }
+    }
+
+    /**
      * insert new data into user
      * @param email 
      * @param name 
@@ -22,11 +46,12 @@ export class UsersService {
      * @returns 
      */
     async createUser(email: string, name: string, password: string): Promise<any>{
+        const Pass = await hashPassword(password);
         return this.prs.user.create({
             data: {
             email,
             name,
-            password
+            password : Pass
             }
         })
     }
